@@ -1099,6 +1099,7 @@ double RunVmaf(const char* fmt, int width, int height,
 
         OTab params;
         params["model"] = _get_file_name(std::string(model_path));
+        params["liheng"] = "test";
         params["scaledWidth"] = width;
         params["scaledHeight"] = height;
         params["subsample"] = n_subsample;
