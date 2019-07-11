@@ -34,7 +34,11 @@ extern "C" {
 
 typedef struct
 {
+    #if 1 //LH
+    int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data);
+    #else
     int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data);
+    #endif
     void *user_data;
     int w;
     int h;
@@ -85,7 +89,11 @@ typedef struct
 } VMAF_THREAD_STRUCT;
 void* combo_threadfunc(void* vmaf_thread_data);
 
+#if 1 //LH
+int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data), void *user_data, int w, int h, const char *fmt,
+#else
 int combo(int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data), void *user_data, int w, int h, const char *fmt,
+#endif
         DArray *adm_num_array,
         DArray *adm_den_array,
         DArray *adm_num_scale0_array,

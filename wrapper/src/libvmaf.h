@@ -32,7 +32,11 @@
 extern "C" {
 #endif
 
+#if 1 //LH
+int compute_vmaf(double* vmaf_score, char* fmt, int width, int height, int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride_byte, int stride_byte_uv, int w_uv, int h_uv, void *user_data),
+#else
 int compute_vmaf(double* vmaf_score, char* fmt, int width, int height, int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride_byte, void *user_data),
+#endif
 				 void *user_data, char *model_path, char *log_path, char *log_fmt, int disable_clip, int disable_avx, int enable_transform, int phone_model, int do_psnr,
 				 int do_ssim, int do_ms_ssim, char *pool_method, int n_thread, int n_subsample, int enable_conf_interval);
 
@@ -106,9 +110,16 @@ private:
 
 class IVmafQualityRunner {
 public:
+#if 1 //LH
+    virtual Result run(Asset asset, int(*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v,
+        float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, 
+        void *user_data), void *user_data, bool disable_clip, bool enable_transform,
+        bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample) = 0;
+#else
     virtual Result run(Asset asset, int(*read_frame)(float *ref_data, float *main_data, float *temp_data,
         int stride, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
         bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample) = 0;
+#endif
     virtual ~IVmafQualityRunner() {}
 };
 

@@ -108,6 +108,32 @@ void* combo_threadfunc(void* vmaf_thread_data)
     float *blur_buf_ = 0;
 #endif
 
+#if 1 //LH
+    int w_uv, h_uv, stride_uv;
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv420p10le"))
+    {
+        w_uv = w / 2;
+        h_uv = h / 2;
+    }
+    else if (!strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv422p10le"))
+    {
+        w_uv = w / 2;
+        h_uv = h;
+    }
+    else if (!strcmp(fmt, "yuv444p") || !strcmp(fmt, "yuv444p10le"))
+    {
+        w_uv = w;
+        h_uv = h;
+    }
+    else
+    {
+        sprintf(errmsg, "unknown format %s.\n", fmt);
+        goto fail_or_end;
+    }
+    stride_uv = ALIGN_CEIL(w_uv * sizeof(float));
+
+#endif
+
     // use temp_buf for convolution_f32_c, and fread u and v
     if (!(temp_buf = aligned_malloc(data_sz * 2, MAX_ALIGN)))
     {
@@ -154,7 +180,11 @@ void* combo_threadfunc(void* vmaf_thread_data)
 
             // read frame from file
 
+#if 1 //LH
+            ret = thread_data->read_frame(ref_buf, temp_buf, temp_buf, dis_buf, temp_buf, temp_buf, stride, stride_uv, w_uv, h_uv, user_data);
+#else
             ret = thread_data->read_frame(ref_buf, dis_buf, temp_buf, stride, user_data);
+#endif
             if (ret == 1)
             {
 #ifdef MULTI_THREADING
@@ -220,7 +250,11 @@ void* combo_threadfunc(void* vmaf_thread_data)
             goto fail_or_end;
         }
 
+#if 1 //LH
+        ret = thread_data->read_frame(next_ref_buf, temp_buf, temp_buf, next_dis_buf, temp_buf, temp_buf, stride, stride_uv, w_uv, h_uv, user_data);
+#else
         ret = thread_data->read_frame(next_ref_buf, next_dis_buf, temp_buf, stride, user_data);
+#endif
         if (ret == 1)
         {
 #ifdef MULTI_THREADING
@@ -579,7 +613,11 @@ fail_or_end:
 
 #ifdef MULTI_THREADING
 
+#if 1 //LH
+int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data), void *user_data, int w, int h, const char *fmt,
+#else
 int combo(int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data), void *user_data, int w, int h, const char *fmt,
+#endif
         DArray *adm_num_array,
         DArray *adm_den_array,
         DArray *adm_num_scale0_array,

@@ -549,9 +549,16 @@ void VmafQualityRunner::_set_prediction_result(
     result.set_scores("vmaf", score);
 }
 
+#if 1 //LH
+Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, 
+                       float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv,
+                       int h_uv, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
+                       bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample)
+#else
 Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, float *main_data, float *temp_data,
                        int stride, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
                        bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample)
+#endif
 {
 
     std::unique_ptr<LibsvmNusvrTrainTestModel> model_ptr = _load_model(model_path);
@@ -778,6 +785,9 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
                     Stringize(model.feature_names[j]).c_str());
             throw VmafException("Unknown feature name");
         }
+        #if 0 //LH add
+        result.set_scores("vif", vif);
+        #endif
     }
 
     if (psnr_array_ptr != NULL) {
@@ -949,7 +959,11 @@ void BootstrapVmafQualityRunner::_set_prediction_result(
 static const char VMAFOSS_DOC_VERSION[] = "1.3.14";
 
 double RunVmaf(const char* fmt, int width, int height,
+#if 1 //LH
+               int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data),
+#else
                int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data),
+#endif
                void *user_data, const char *model_path, const char *log_path, const char *log_fmt,
                bool disable_clip, bool enable_transform,
                bool do_psnr, bool do_ssim, bool do_ms_ssim,
