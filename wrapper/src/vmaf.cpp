@@ -576,7 +576,12 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
             vif_num_scale0_array, vif_den_scale0_array, vif_num_scale1_array,
             vif_den_scale1_array, vif_num_scale2_array, vif_den_scale2_array,
             vif_num_scale3_array, vif_den_scale3_array, vif_array, psnr_array,
+#if 1 //LH
+            ssim_array, ms_ssim_array,
+            ssim_array_u, ms_ssim_array_u, ssim_array_v;
+#else
             ssim_array, ms_ssim_array;
+#endif
     /* use the following ptrs as flags to turn on/off optional metrics */
     DArray *psnr_array_ptr, *ssim_array_ptr, *ms_ssim_array_ptr;
     init_array(&adm_num_array, INIT_FRAMES);
@@ -603,6 +608,13 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     init_array(&psnr_array, INIT_FRAMES);
     init_array(&ssim_array, INIT_FRAMES);
     init_array(&ms_ssim_array, INIT_FRAMES);
+#if 1 //LH
+    DArray *psnr_array_ptr_u, *ssim_array_ptr_u, *ms_ssim_array_ptr_u, *ssim_array_ptr_v;
+    init_array(&ssim_array_u, INIT_FRAMES);
+    init_array(&ms_ssim_array_u, INIT_FRAMES);
+    init_array(&ssim_array_v, INIT_FRAMES);
+#endif
+
     /* optional output arrays */
     if (do_psnr) {
         psnr_array_ptr = &psnr_array;
@@ -619,6 +631,23 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     } else {
         ms_ssim_array_ptr = NULL;
     }
+#if 1 //LH
+    if (do_ssim) {
+        ssim_array_ptr_u = &ssim_array_u;
+    } else {
+        ssim_array_ptr_u = NULL;
+    }
+    if (do_ms_ssim) {
+        ms_ssim_array_ptr_u = &ms_ssim_array_u;
+    } else {
+        ms_ssim_array_ptr_u = NULL;
+    }
+    if (do_ssim) {
+        ssim_array_ptr_v = &ssim_array_v;
+    } else {
+        ssim_array_ptr_v = NULL;
+    }
+#endif
     dbg_printf("Extract atom features...\n");
     int ret = combo(read_frame, user_data, w, h, fmt, &adm_num_array,
             &adm_den_array, &adm_num_scale0_array, &adm_den_scale0_array,
@@ -628,7 +657,12 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
             &vif_den_scale0_array, &vif_num_scale1_array, &vif_den_scale1_array,
             &vif_num_scale2_array, &vif_den_scale2_array, &vif_num_scale3_array,
             &vif_den_scale3_array, &vif_array, psnr_array_ptr, ssim_array_ptr,
+            #if 1 //LH
+            ms_ssim_array_ptr, ssim_array_ptr_u, ms_ssim_array_ptr_u, ssim_array_ptr_v, 
+            errmsg, n_thread, n_subsample);
+            #else
             ms_ssim_array_ptr, errmsg, n_thread, n_subsample);
+            #endif
     if (ret) {
         throw VmafException(errmsg);
     }
@@ -689,6 +723,9 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
             vif, motion2;
     StatVector adm_scale0, adm_scale1, adm_scale2, adm_scale3;
     StatVector psnr, ssim, ms_ssim;
+    #if 1 //LH
+    StatVector ssim_u, ms_ssim_u, ssim_v, ms_ssim_v;
+    #endif
     std::vector<VmafPredictionStruct> predictionStructs;
     for (size_t i = 0; i < num_frms; i += n_subsample) {
         adm2.append(
@@ -731,6 +768,17 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
         if (ms_ssim_array_ptr != NULL) {
             ms_ssim.append(get_at(&ms_ssim_array, i));
         }
+        #if 1 //LH
+        if (ssim_array_ptr_u != NULL) {
+            ssim_u.append(get_at(&ssim_array_u, i));
+        }
+        if (ms_ssim_array_ptr != NULL) {
+            ms_ssim_u.append(get_at(&ms_ssim_array_u, i));
+        }
+        if (ssim_array_ptr_v != NULL) {
+            ssim_v.append(get_at(&ssim_array_v, i));
+        }
+        #endif
     }
     dbg_printf(
             "Normalize features, SVM regression, denormalize score, clip...\n");
@@ -799,6 +847,17 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     if (ms_ssim_array_ptr != NULL) {
         result.set_scores("ms_ssim", ms_ssim);
     }
+    #if 1 //LH
+    if (ssim_array_ptr_u != NULL) {
+        result.set_scores("ssim_u", ssim_u);
+    }
+    //if (ms_ssim_array_ptr_u != NULL) {
+    //    result.set_scores("ms_ssim_u", ms_ssim_u);
+    //}    
+    if (ssim_array_ptr_v != NULL) {
+        result.set_scores("ssim_v", ssim_v);
+    }
+    #endif
 
     _set_prediction_result(predictionStructs, result);
 
@@ -826,6 +885,11 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     free_array(&psnr_array);
     free_array(&ssim_array);
     free_array(&ms_ssim_array);
+    #if 1 //LH
+    free_array(&ssim_array_u);
+    free_array(&ms_ssim_array_u);
+    free_array(&ssim_array_v);
+    #endif
 
     return result;
 }
