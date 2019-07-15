@@ -7,7 +7,7 @@ from vmaf.core.asset import Asset
 from vmaf.core.quality_runner import VmafossExecQualityRunner
 from vmaf.core.result_store import FileSystemResultStore
 
-from .testutil import set_default_576_324_videos_for_testing
+from testutil import set_default_576_324_videos_for_testing
 
 __copyright__ = "Copyright 2016-2019, Netflix, Inc."
 __license__ = "Apache, Version 2.0"
