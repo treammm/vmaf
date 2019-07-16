@@ -600,17 +600,17 @@ void* combo_threadfunc(void* vmaf_thread_data)
 #if 1 //LH
         /* =========== Features for U/V channel ============== */
         // offset back the buffers only if required
-        if (frm_idx % n_subsample == 0 && ( (thread_data->ssim_array != NULL) || (thread_data->ms_ssim_array != NULL) ))
+        if (frm_idx % n_subsample == 0 && ( (thread_data->ssim_array_u != NULL) || (thread_data->ms_ssim_array_u != NULL) ))
         {
-            //offset_image(ref_buf_u, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
-            //offset_image(dis_buf_v, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            offset_image(ref_buf_u, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            offset_image(dis_buf_u, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
             offset_flag = true;
 		}
         if (frm_idx % n_subsample == 0 && thread_data->ssim_array_u != NULL && thread_data->ssim_array_v != NULL)
         {
             /* =========== psnr ============== */
             ret = compute_psnr(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, peak, psnr_max);
-            dbg_printf("psnr: %.3f, ", score);
+            //printf("psnr: %.3f, ", score);
             /* =========== ssim ============== */
             if ((ret = compute_ssim(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, &l_score, &c_score, &s_score)))
             {
@@ -629,6 +629,54 @@ void* combo_threadfunc(void* vmaf_thread_data)
             insert_array_at(thread_data->ssim_array_v, score, frm_idx);
         }
 
+        if(offset_flag)
+        {
+            offset_image(ref_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            offset_image(dis_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            offset_flag = false;
+		}
+
+        /* =========== adm U ============== */
+        if (frm_idx % n_subsample == 0)
+        {
+            if ((ret = compute_adm(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, &score_num, &score_den, scores, ADM_BORDER_FACTOR)))
+            {
+                sprintf(errmsg, "compute_adm failed.\n");
+                goto fail_or_end;
+            }
+
+            insert_array_at(thread_data->adm_num_array_u, score_num, frm_idx);
+            insert_array_at(thread_data->adm_den_array_u, score_den, frm_idx);
+            insert_array_at(thread_data->adm_num_scale0_array_u, scores[0], frm_idx);
+            insert_array_at(thread_data->adm_den_scale0_array_u, scores[1], frm_idx);
+            insert_array_at(thread_data->adm_num_scale1_array_u, scores[2], frm_idx);
+            insert_array_at(thread_data->adm_den_scale1_array_u, scores[3], frm_idx);
+            insert_array_at(thread_data->adm_num_scale2_array_u, scores[4], frm_idx);
+            insert_array_at(thread_data->adm_den_scale2_array_u, scores[5], frm_idx);
+            insert_array_at(thread_data->adm_num_scale3_array_u, scores[6], frm_idx);
+            insert_array_at(thread_data->adm_den_scale3_array_u, scores[7], frm_idx);
+        }
+
+        /* =========== vif ============== */
+
+        if (frm_idx % n_subsample == 0)
+        {
+            if ((ret = compute_vif(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, &score_num, &score_den, scores)))
+            {
+                sprintf(errmsg, "compute_vif failed.\n");
+                goto fail_or_end;
+            }
+
+            insert_array_at(thread_data->vif_num_scale0_array_u, scores[0], frm_idx);
+            insert_array_at(thread_data->vif_den_scale0_array_u, scores[1], frm_idx);
+            insert_array_at(thread_data->vif_num_scale1_array_u, scores[2], frm_idx);
+            insert_array_at(thread_data->vif_den_scale1_array_u, scores[3], frm_idx);
+            insert_array_at(thread_data->vif_num_scale2_array_u, scores[4], frm_idx);
+            insert_array_at(thread_data->vif_den_scale2_array_u, scores[5], frm_idx);
+            insert_array_at(thread_data->vif_num_scale3_array_u, scores[6], frm_idx);
+            insert_array_at(thread_data->vif_den_scale3_array_u, scores[7], frm_idx);
+            insert_array_at(thread_data->vif_array_u, score, frm_idx);
+        }
 #endif
 
         dbg_printf("\n");
@@ -765,6 +813,28 @@ int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_
         DArray *ssim_array,
         DArray *ms_ssim_array,
 
+        DArray *adm_num_array_u,
+        DArray *adm_den_array_u,
+        DArray *adm_num_scale0_array_u,
+        DArray *adm_den_scale0_array_u,
+        DArray *adm_num_scale1_array_u,
+        DArray *adm_den_scale1_array_u,
+        DArray *adm_num_scale2_array_u,
+        DArray *adm_den_scale2_array_u,
+        DArray *adm_num_scale3_array_u,
+        DArray *adm_den_scale3_array_u,
+        //DArray *motion_array_u,
+        //DArray *motion2_array_u,
+        DArray *vif_num_scale0_array_u,
+        DArray *vif_den_scale0_array_u,
+        DArray *vif_num_scale1_array_u,
+        DArray *vif_den_scale1_array_u,
+        DArray *vif_num_scale2_array_u,
+        DArray *vif_den_scale2_array_u,
+        DArray *vif_num_scale3_array_u,
+        DArray *vif_den_scale3_array_u,
+        DArray *vif_array_u,
+
         DArray *ssim_array_u,
         DArray *ms_ssim_array_u,
         DArray *ssim_array_v,
@@ -802,6 +872,29 @@ int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_
     combo_thread_data.vif_num_scale3_array = vif_num_scale3_array;
     combo_thread_data.vif_den_scale3_array = vif_den_scale3_array;
     combo_thread_data.vif_array = vif_array;
+
+    combo_thread_data.adm_num_array_u = adm_num_array_u;
+    combo_thread_data.adm_den_array_u = adm_den_array_u;
+    combo_thread_data.adm_num_scale0_array_u = adm_num_scale0_array_u;
+    combo_thread_data.adm_den_scale0_array_u = adm_den_scale0_array_u;
+    combo_thread_data.adm_num_scale1_array_u = adm_num_scale1_array_u;
+    combo_thread_data.adm_den_scale1_array_u = adm_den_scale1_array_u;
+    combo_thread_data.adm_num_scale2_array_u = adm_num_scale2_array_u;
+    combo_thread_data.adm_den_scale2_array_u = adm_den_scale2_array_u;
+    combo_thread_data.adm_num_scale3_array_u = adm_num_scale3_array_u;
+    combo_thread_data.adm_den_scale3_array_u = adm_den_scale3_array_u;
+    //combo_thread_data.motion_array_u = motion_array_u;
+    //combo_thread_data.motion2_array_u = motion2_array_u;
+    combo_thread_data.vif_num_scale0_array_u = vif_num_scale0_array_u;
+    combo_thread_data.vif_den_scale0_array_u = vif_den_scale0_array_u;
+    combo_thread_data.vif_num_scale1_array_u = vif_num_scale1_array_u;
+    combo_thread_data.vif_den_scale1_array_u = vif_den_scale1_array_u;
+    combo_thread_data.vif_num_scale2_array_u = vif_num_scale2_array_u;
+    combo_thread_data.vif_den_scale2_array_u = vif_den_scale2_array_u;
+    combo_thread_data.vif_num_scale3_array_u = vif_num_scale3_array_u;
+    combo_thread_data.vif_den_scale3_array_u = vif_den_scale3_array_u;
+    combo_thread_data.vif_array_u = vif_array_u;
+
     combo_thread_data.psnr_array = psnr_array;
     combo_thread_data.ssim_array = ssim_array;
     combo_thread_data.ms_ssim_array = ms_ssim_array;
