@@ -606,6 +606,17 @@ void* combo_threadfunc(void* vmaf_thread_data)
             offset_image(dis_buf_u, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
             offset_flag = true;
 		}
+        if (frm_idx % n_subsample == 0 && thread_data->psnr_array_u != NULL)
+        {
+            /* =========== psnr ============== */
+            if ((ret = compute_psnr(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, peak, psnr_max)))
+            {
+                sprintf(errmsg, "compute_psnr failed.\n");
+                goto fail_or_end;
+            }
+            dbg_printf("psnr_u: %.3f, ", score);
+            insert_array_at(thread_data->psnr_array_u, score, frm_idx);
+        }
         if (frm_idx % n_subsample == 0 && thread_data->ssim_array_u != NULL && thread_data->ssim_array_v != NULL)
         {
             /* =========== psnr ============== */
@@ -835,6 +846,7 @@ int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_
         DArray *vif_den_scale3_array_u,
         DArray *vif_array_u,
 
+        DArray *psnr_array_u,
         DArray *ssim_array_u,
         DArray *ms_ssim_array_u,
         DArray *ssim_array_v,
@@ -899,6 +911,7 @@ int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_
     combo_thread_data.ssim_array = ssim_array;
     combo_thread_data.ms_ssim_array = ms_ssim_array;
 
+    combo_thread_data.psnr_array_u = psnr_array_u;
     combo_thread_data.ssim_array_u = ssim_array_u;
     combo_thread_data.ms_ssim_array_u = ms_ssim_array_u;
     combo_thread_data.ssim_array_v = ssim_array_v;

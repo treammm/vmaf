@@ -87,6 +87,7 @@ typedef struct
     DArray *vif_den_scale3_array_u;
     DArray *vif_array_u;
 
+    DArray *psnr_array_u;
     DArray *ssim_array_u;
     DArray *ms_ssim_array_u;
     DArray *ssim_array_v;
@@ -202,6 +203,7 @@ int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_
         DArray *vif_num_scale3_array_u,
         DArray *vif_den_scale3_array_u,
         DArray *vif_array_u,
+        DArray *psnr_array_u,
         DArray *ssim_array_u,
         DArray *ms_ssim_array_u,
         DArray *ssim_array_v,
