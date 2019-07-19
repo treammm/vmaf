@@ -4,10 +4,10 @@ import unittest
 
 from vmaf.config import VmafConfig
 from vmaf.core.asset import Asset
-from vmaf.core.quality_runner import VmafossExecQualityRunner
+from vmaf.core.quality_runner import VmafossExecQualityRunner, VmafossColorExecQualityRunner
 from vmaf.core.result_store import FileSystemResultStore
 
-from .testutil import set_default_576_324_videos_for_testing
+from testutil import set_default_576_324_videos_for_testing
 
 __copyright__ = "Copyright 2016-2019, Netflix, Inc."
 __license__ = "Apache, Version 2.0"
@@ -59,6 +59,38 @@ class VmafossexecQualityRunnerTest(unittest.TestCase):
 
         self.assertAlmostEqual(results[0]['VMAFOSSEXEC_score'], 76.699271272486044, places=3)
         self.assertAlmostEqual(results[1]['VMAFOSSEXEC_score'],99.946416604585025, places=4)
+
+    def test_run_vmafossexec_runner_color(self):
+            print('test on running VMAFOSSEXEC runner...')
+            ref_path, dis_path, asset, asset_original = set_default_576_324_videos_for_testing()
+
+            self.runner = VmafossColorExecQualityRunner(
+                [asset, asset_original],
+                None, fifo_mode=True,
+                delete_workdir=True,
+                result_store=None,
+            )
+            self.runner.run()
+
+            results = self.runner.results
+
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_vif_scale0_u_score'], 0.465861, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_vif_scale1_u_score'], 0.834916, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_vif_scale2_u_score'], 0.893572, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_vif_scale3_u_score'], 0.920812, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_vif_u_score'], 0.533634, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_adm2_u_score'], 0.915843, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_psnr_u_score'], 38.449448, places=4)
+            self.assertAlmostEqual(results[0]['VMAFOSSEXEC_ssim_u_score'], 0.938098, places=4)
+
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_vif_scale0_u_score'], 1.000000, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_vif_scale1_u_score'], 0.999998, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_vif_scale2_u_score'], 0.999997, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_vif_scale3_u_score'], 0.999996, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_vif_u_score'], 0.999999, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_adm2_u_score'], 1.000000, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_psnr_u_score'], 60.000000, places=4)
+            self.assertAlmostEqual(results[1]['VMAFOSSEXEC_ssim_u_score'], 1.000000, places=4)
 
     def test_run_vmafossexec_runner_with_thread(self):
         print('test on running VMAFOSSEXEC runner with thread...')

@@ -580,7 +580,6 @@ class VmafPhoneQualityRunner(VmafQualityRunner):
     def _do_transform_score(kwargs):
         return True
 
-
 class VmafossExecQualityRunner(QualityRunner):
 
     TYPE = 'VMAFOSSEXEC'
@@ -730,6 +729,11 @@ class VmafossExecQualityRunner(QualityRunner):
                 quality_result[self.get_feature_scores_key(feature)] = feature_scores[i_feature]
         return quality_result
 
+
+class VmafossColorExecQualityRunner(VmafossExecQualityRunner):
+    FEATURES = ['adm2_u', 'adm_scale0_u', 'adm_scale1_u', 'adm_scale2_u', 'adm_scale3_u',
+                'vif_scale0_u', 'vif_scale1_u', 'vif_scale2_u', 'vif_scale3_u',
+                'vif_u', 'psnr_u', 'ssim_u']
 
 class SsimQualityRunner(QualityRunner):
 
