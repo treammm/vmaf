@@ -604,8 +604,10 @@ void* combo_threadfunc(void* vmaf_thread_data)
         {
             offset_image(ref_buf_u, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
             offset_image(dis_buf_u, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            offset_image(ref_buf_v, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            offset_image(dis_buf_v, -OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
             offset_flag = true;
-		}
+        }
         if (frm_idx % n_subsample == 0 && thread_data->psnr_array_u != NULL)
         {
             /* =========== psnr ============== */
@@ -619,9 +621,6 @@ void* combo_threadfunc(void* vmaf_thread_data)
         }
         if (frm_idx % n_subsample == 0 && thread_data->ssim_array_u != NULL && thread_data->ssim_array_v != NULL)
         {
-            /* =========== psnr ============== */
-            ret = compute_psnr(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, peak, psnr_max);
-            //printf("psnr: %.3f, ", score);
             /* =========== ssim ============== */
             if ((ret = compute_ssim(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, &l_score, &c_score, &s_score)))
             {
@@ -642,10 +641,12 @@ void* combo_threadfunc(void* vmaf_thread_data)
 
         if(offset_flag)
         {
-            offset_image(ref_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
-            offset_image(dis_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            #offset_image(ref_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            #offset_image(dis_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            #offset_image(ref_buf_v, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            #offset_image(dis_buf_v, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
             offset_flag = false;
-		}
+        }
 
         /* =========== adm U ============== */
         if (frm_idx % n_subsample == 0)
