@@ -641,10 +641,10 @@ void* combo_threadfunc(void* vmaf_thread_data)
 
         if(offset_flag)
         {
-            #offset_image(ref_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
-            #offset_image(dis_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
-            #offset_image(ref_buf_v, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
-            #offset_image(dis_buf_v, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            //offset_image(ref_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            //offset_image(dis_buf_u, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            //offset_image(ref_buf_v, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
+            //offset_image(dis_buf_v, OPT_RANGE_PIXEL_OFFSET, w_uv, h_uv, stride_uv);
             offset_flag = false;
         }
 
