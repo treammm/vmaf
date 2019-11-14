@@ -548,9 +548,16 @@ void VmafQualityRunner::_set_prediction_result(
     result.set_scores("vmaf", score);
 }
 
+#if 1 //LH
+Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, 
+                       float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv,
+                       int h_uv, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
+                       bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample)
+#else
 Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, float *main_data, float *temp_data,
                        int stride, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
                        bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample)
+#endif
 {
 
     std::unique_ptr<LibsvmNusvrTrainTestModel> model_ptr = _load_model(model_path);
@@ -568,7 +575,29 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
             vif_num_scale0_array, vif_den_scale0_array, vif_num_scale1_array,
             vif_den_scale1_array, vif_num_scale2_array, vif_den_scale2_array,
             vif_num_scale3_array, vif_den_scale3_array, vif_array, psnr_array,
+#if 1 //LH
+            ssim_array, ms_ssim_array,
+
+            adm_num_array_u, adm_den_array_u, adm_num_scale0_array_u,
+            adm_den_scale0_array_u, adm_num_scale1_array_u, adm_den_scale1_array_u,
+            adm_num_scale2_array_u, adm_den_scale2_array_u, adm_num_scale3_array_u,
+            adm_den_scale3_array_u, motion_array_u, motion2_array_u,
+            vif_num_scale0_array_u, vif_den_scale0_array_u, vif_num_scale1_array_u,
+            vif_den_scale1_array_u, vif_num_scale2_array_u, vif_den_scale2_array_u,
+            vif_num_scale3_array_u, vif_den_scale3_array_u, vif_array_u, psnr_array_u,
+            ssim_array_u, ms_ssim_array_u,
+
+            adm_num_array_v, adm_den_array_v, adm_num_scale0_array_v,
+            adm_den_scale0_array_v, adm_num_scale1_array_v, adm_den_scale1_array_v,
+            adm_num_scale2_array_v, adm_den_scale2_array_v, adm_num_scale3_array_v,
+            adm_den_scale3_array_v, motion_array_v, motion2_array_v,
+            vif_num_scale0_array_v, vif_den_scale0_array_v, vif_num_scale1_array_v,
+            vif_den_scale1_array_v, vif_num_scale2_array_v, vif_den_scale2_array_v,
+            vif_num_scale3_array_v, vif_den_scale3_array_v, vif_array_v, psnr_array_v,
+            ssim_array_v, ms_ssim_array_v;
+#else
             ssim_array, ms_ssim_array;
+#endif
     /* use the following ptrs as flags to turn on/off optional metrics */
     DArray *psnr_array_ptr, *ssim_array_ptr, *ms_ssim_array_ptr;
     init_array(&adm_num_array, INIT_FRAMES);
@@ -595,6 +624,62 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     init_array(&psnr_array, INIT_FRAMES);
     init_array(&ssim_array, INIT_FRAMES);
     init_array(&ms_ssim_array, INIT_FRAMES);
+#if 1 //LH
+    DArray *psnr_array_ptr_u, *ssim_array_ptr_u, *ms_ssim_array_ptr_u, *psnr_array_ptr_v, *ssim_array_ptr_v, *ms_ssim_array_ptr_v;
+
+    init_array(&adm_num_array_u, INIT_FRAMES);
+    init_array(&adm_den_array_u, INIT_FRAMES);
+    init_array(&adm_num_scale0_array_u, INIT_FRAMES);
+    init_array(&adm_den_scale0_array_u, INIT_FRAMES);
+    init_array(&adm_num_scale1_array_u, INIT_FRAMES);
+    init_array(&adm_den_scale1_array_u, INIT_FRAMES);
+    init_array(&adm_num_scale2_array_u, INIT_FRAMES);
+    init_array(&adm_den_scale2_array_u, INIT_FRAMES);
+    init_array(&adm_num_scale3_array_u, INIT_FRAMES);
+    init_array(&adm_den_scale3_array_u, INIT_FRAMES);
+    init_array(&motion_array_u, INIT_FRAMES);
+    init_array(&motion2_array_u, INIT_FRAMES);
+    init_array(&vif_num_scale0_array_u, INIT_FRAMES);
+    init_array(&vif_den_scale0_array_u, INIT_FRAMES);
+    init_array(&vif_num_scale1_array_u, INIT_FRAMES);
+    init_array(&vif_den_scale1_array_u, INIT_FRAMES);
+    init_array(&vif_num_scale2_array_u, INIT_FRAMES);
+    init_array(&vif_den_scale2_array_u, INIT_FRAMES);
+    init_array(&vif_num_scale3_array_u, INIT_FRAMES);
+    init_array(&vif_den_scale3_array_u, INIT_FRAMES);
+    init_array(&vif_array_u, INIT_FRAMES);
+
+    init_array(&psnr_array_u, INIT_FRAMES);
+    init_array(&ssim_array_u, INIT_FRAMES);
+    init_array(&ms_ssim_array_u, INIT_FRAMES);
+
+    init_array(&adm_num_array_v, INIT_FRAMES);
+    init_array(&adm_den_array_v, INIT_FRAMES);
+    init_array(&adm_num_scale0_array_v, INIT_FRAMES);
+    init_array(&adm_den_scale0_array_v, INIT_FRAMES);
+    init_array(&adm_num_scale1_array_v, INIT_FRAMES);
+    init_array(&adm_den_scale1_array_v, INIT_FRAMES);
+    init_array(&adm_num_scale2_array_v, INIT_FRAMES);
+    init_array(&adm_den_scale2_array_v, INIT_FRAMES);
+    init_array(&adm_num_scale3_array_v, INIT_FRAMES);
+    init_array(&adm_den_scale3_array_v, INIT_FRAMES);
+    init_array(&motion_array_v, INIT_FRAMES);
+    init_array(&motion2_array_v, INIT_FRAMES);
+    init_array(&vif_num_scale0_array_v, INIT_FRAMES);
+    init_array(&vif_den_scale0_array_v, INIT_FRAMES);
+    init_array(&vif_num_scale1_array_v, INIT_FRAMES);
+    init_array(&vif_den_scale1_array_v, INIT_FRAMES);
+    init_array(&vif_num_scale2_array_v, INIT_FRAMES);
+    init_array(&vif_den_scale2_array_v, INIT_FRAMES);
+    init_array(&vif_num_scale3_array_v, INIT_FRAMES);
+    init_array(&vif_den_scale3_array_v, INIT_FRAMES);
+    init_array(&vif_array_v, INIT_FRAMES);
+
+    init_array(&psnr_array_v, INIT_FRAMES);
+    init_array(&ssim_array_v, INIT_FRAMES);
+    init_array(&ms_ssim_array_v, INIT_FRAMES);
+#endif
+
     /* optional output arrays */
     if (do_psnr) {
         psnr_array_ptr = &psnr_array;
@@ -611,6 +696,38 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     } else {
         ms_ssim_array_ptr = NULL;
     }
+#if 1 //LH
+    if (do_psnr) {
+        psnr_array_ptr_u = &psnr_array_u;
+    } else {
+        psnr_array_ptr_u = NULL;
+    }
+    if (do_ssim) {
+        ssim_array_ptr_u = &ssim_array_u;
+    } else {
+        ssim_array_ptr_u = NULL;
+    }
+    if (do_ms_ssim) {
+        ms_ssim_array_ptr_u = &ms_ssim_array_u;
+    } else {
+        ms_ssim_array_ptr_u = NULL;
+    }
+    if (do_psnr) {
+        psnr_array_ptr_v = &psnr_array_v;
+    } else {
+        psnr_array_ptr_v = NULL;
+    }
+    if (do_ssim) {
+        ssim_array_ptr_v = &ssim_array_v;
+    } else {
+        ssim_array_ptr_v = NULL;
+    }
+    if (do_ms_ssim) {
+        ms_ssim_array_ptr_v = &ms_ssim_array_v;
+    } else {
+        ms_ssim_array_ptr_v = NULL;
+    }
+#endif
     dbg_printf("Extract atom features...\n");
     int ret = combo(read_frame, user_data, w, h, fmt, &adm_num_array,
             &adm_den_array, &adm_num_scale0_array, &adm_den_scale0_array,
@@ -620,7 +737,29 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
             &vif_den_scale0_array, &vif_num_scale1_array, &vif_den_scale1_array,
             &vif_num_scale2_array, &vif_den_scale2_array, &vif_num_scale3_array,
             &vif_den_scale3_array, &vif_array, psnr_array_ptr, ssim_array_ptr,
+            #if 1 //LH
+            ms_ssim_array_ptr,
+            &adm_num_array_u, &adm_den_array_u, &adm_num_scale0_array_u, &adm_den_scale0_array_u,
+            &adm_num_scale1_array_u, &adm_den_scale1_array_u, &adm_num_scale2_array_u,
+            &adm_den_scale2_array_u, &adm_num_scale3_array_u, &adm_den_scale3_array_u,
+            /*&motion_array_u, &motion2_array_u,*/ &vif_num_scale0_array_u,
+            &vif_den_scale0_array_u, &vif_num_scale1_array_u, &vif_den_scale1_array_u,
+            &vif_num_scale2_array_u, &vif_den_scale2_array_u, &vif_num_scale3_array_u,
+            &vif_den_scale3_array_u, &vif_array_u,
+            psnr_array_ptr_u, ssim_array_ptr_u, ms_ssim_array_ptr_u,
+
+            &adm_num_array_v, &adm_den_array_v, &adm_num_scale0_array_v, &adm_den_scale0_array_v,
+            &adm_num_scale1_array_v, &adm_den_scale1_array_v, &adm_num_scale2_array_v,
+            &adm_den_scale2_array_v, &adm_num_scale3_array_v, &adm_den_scale3_array_v,
+            /*&motion_array_v, &motion2_array_v,*/ &vif_num_scale0_array_v,
+            &vif_den_scale0_array_v, &vif_num_scale1_array_v, &vif_den_scale1_array_v,
+            &vif_num_scale2_array_v, &vif_den_scale2_array_v, &vif_num_scale3_array_v,
+            &vif_den_scale3_array_v, &vif_array_v,
+            psnr_array_ptr_v, ssim_array_ptr_v, ms_ssim_array_ptr_v,
+            errmsg, n_thread, n_subsample);
+            #else
             ms_ssim_array_ptr, errmsg, n_thread, n_subsample);
+            #endif
     if (ret) {
         throw VmafException(errmsg);
     }
@@ -681,6 +820,14 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
             vif, motion2;
     StatVector adm_scale0, adm_scale1, adm_scale2, adm_scale3;
     StatVector psnr, ssim, ms_ssim;
+    #if 1 //LH
+    StatVector adm2_u, vif_scale0_u, vif_scale1_u, vif_scale2_u, vif_scale3_u, vif_u;
+    StatVector adm2_v, vif_scale0_v, vif_scale1_v, vif_scale2_v, vif_scale3_v, vif_v;
+    StatVector adm_scale0_u, adm_scale1_u, adm_scale2_u, adm_scale3_u;
+    StatVector adm_scale0_v, adm_scale1_v, adm_scale2_v, adm_scale3_v;
+    StatVector psnr_u, ssim_u, ms_ssim_u;
+    StatVector psnr_v, ssim_v, ms_ssim_v;
+    #endif
     std::vector<VmafPredictionStruct> predictionStructs;
     for (size_t i = 0; i < num_frms; i += n_subsample) {
         adm2.append(
@@ -723,6 +870,89 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
         if (ms_ssim_array_ptr != NULL) {
             ms_ssim.append(get_at(&ms_ssim_array, i));
         }
+        #if 1 //LH
+        adm2_u.append(
+                (get_at(&adm_num_array_u, i) + ADM2_CONSTANT)
+                        / (get_at(&adm_den_array_u, i) + ADM2_CONSTANT));
+        adm_scale0_u.append(
+                (get_at(&adm_num_scale0_array_u, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale0_array_u, i) + ADM_SCALE_CONSTANT));
+        adm_scale1_u.append(
+                (get_at(&adm_num_scale1_array_u, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale1_array_u, i) + ADM_SCALE_CONSTANT));
+        adm_scale2_u.append(
+                (get_at(&adm_num_scale2_array_u, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale2_array_u, i) + ADM_SCALE_CONSTANT));
+        adm_scale3_u.append(
+                (get_at(&adm_num_scale3_array_u, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale3_array_u, i) + ADM_SCALE_CONSTANT));
+        //motion_u.append(get_at(&motion_array_u, i));
+        //motion2_u.append(get_at(&motion2_array_u, i));
+        vif_scale0_u.append(
+                get_at(&vif_num_scale0_array_u, i)
+                        / get_at(&vif_den_scale0_array_u, i));
+        vif_scale1_u.append(
+                get_at(&vif_num_scale1_array_u, i)
+                        / get_at(&vif_den_scale1_array_u, i));
+        vif_scale2_u.append(
+                get_at(&vif_num_scale2_array_u, i)
+                        / get_at(&vif_den_scale2_array_u, i));
+        vif_scale3_u.append(
+                get_at(&vif_num_scale3_array_u, i)
+                        / get_at(&vif_den_scale3_array_u, i));
+        vif_u.append(get_at(&vif_array_u, i));
+
+        if (psnr_array_ptr_u != NULL) {
+            psnr_u.append(get_at(&psnr_array_u, i));
+        }
+        if (ssim_array_ptr_u != NULL) {
+            ssim_u.append(get_at(&ssim_array_u, i));
+        }
+        if (ms_ssim_array_ptr_u != NULL) {
+            ms_ssim_u.append(get_at(&ms_ssim_array_u, i));
+        }
+
+        adm2_v.append(
+                (get_at(&adm_num_array_v, i) + ADM2_CONSTANT)
+                        / (get_at(&adm_den_array_v, i) + ADM2_CONSTANT));
+        adm_scale0_v.append(
+                (get_at(&adm_num_scale0_array_v, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale0_array_v, i) + ADM_SCALE_CONSTANT));
+        adm_scale1_v.append(
+                (get_at(&adm_num_scale1_array_v, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale1_array_v, i) + ADM_SCALE_CONSTANT));
+        adm_scale2_v.append(
+                (get_at(&adm_num_scale2_array_v, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale2_array_v, i) + ADM_SCALE_CONSTANT));
+        adm_scale3_v.append(
+                (get_at(&adm_num_scale3_array_v, i) + ADM_SCALE_CONSTANT)
+                        / (get_at(&adm_den_scale3_array_v, i) + ADM_SCALE_CONSTANT));
+        //motion_v.append(get_at(&motion_array_v, i));
+        //motion2_v.append(get_at(&motion2_array_v, i));
+        vif_scale0_v.append(
+                get_at(&vif_num_scale0_array_v, i)
+                        / get_at(&vif_den_scale0_array_v, i));
+        vif_scale1_v.append(
+                get_at(&vif_num_scale1_array_v, i)
+                        / get_at(&vif_den_scale1_array_v, i));
+        vif_scale2_v.append(
+                get_at(&vif_num_scale2_array_v, i)
+                        / get_at(&vif_den_scale2_array_v, i));
+        vif_scale3_v.append(
+                get_at(&vif_num_scale3_array_v, i)
+                        / get_at(&vif_den_scale3_array_v, i));
+        vif_v.append(get_at(&vif_array_v, i));
+
+        if (psnr_array_ptr_v != NULL) {
+            psnr_v.append(get_at(&psnr_array_v, i));
+        }
+        if (ssim_array_ptr_v != NULL) {
+            ssim_v.append(get_at(&ssim_array_v, i));
+        }
+        if (ms_ssim_array_ptr_v != NULL) {
+            ms_ssim_v.append(get_at(&ms_ssim_array_v, i));
+        }
+        #endif
     }
     dbg_printf(
             "Normalize features, SVM regression, denormalize score, clip...\n");
@@ -790,6 +1020,56 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     if (ms_ssim_array_ptr != NULL) {
         result.set_scores("ms_ssim", ms_ssim);
     }
+    #if 1 //LH
+    for (size_t j = 0; j < model.feature_names.length(); j++) {
+        result.set_scores("vif", vif);
+
+        result.set_scores("adm2_u", adm2_u);
+        result.set_scores("adm_scale0_u", adm_scale0_u);
+        result.set_scores("adm_scale1_u", adm_scale1_u);
+        result.set_scores("adm_scale2_u", adm_scale2_u);
+        result.set_scores("adm_scale3_u", adm_scale3_u);
+        //result.set_scores("motion_u", motion_u);
+        result.set_scores("vif_scale0_u", vif_scale0_u);
+        result.set_scores("vif_scale1_u", vif_scale1_u);
+        result.set_scores("vif_scale2_u", vif_scale2_u);
+        result.set_scores("vif_scale3_u", vif_scale3_u);
+        result.set_scores("vif_u", vif_u);
+        //result.set_scores("motion2_u", motion2_u);
+
+        result.set_scores("adm2_v", adm2_v);
+        result.set_scores("adm_scale0_v", adm_scale0_v);
+        result.set_scores("adm_scale1_v", adm_scale1_v);
+        result.set_scores("adm_scale2_v", adm_scale2_v);
+        result.set_scores("adm_scale3_v", adm_scale3_v);
+        //result.set_scores("motion_v", motion_v);
+        result.set_scores("vif_scale0_v", vif_scale0_v);
+        result.set_scores("vif_scale1_v", vif_scale1_v);
+        result.set_scores("vif_scale2_v", vif_scale2_v);
+        result.set_scores("vif_scale3_v", vif_scale3_v);
+        result.set_scores("vif_v", vif_v);
+        //result.set_scores("motion2_v", motion2_v);
+    }
+
+    if (psnr_array_ptr_u != NULL) {
+        result.set_scores("psnr_u", psnr_u);
+    }
+    if (ssim_array_ptr_u != NULL) {
+        result.set_scores("ssim_u", ssim_u);
+    }
+    if (ms_ssim_array_ptr_u != NULL) {
+        result.set_scores("ms_ssim_u", ms_ssim_u);
+    }    
+    if (psnr_array_ptr_v != NULL) {
+        result.set_scores("psnr_v", psnr_v);
+    }
+    if (ssim_array_ptr_v != NULL) {
+        result.set_scores("ssim_v", ssim_v);
+    }
+    if (ms_ssim_array_ptr_v != NULL) {
+        result.set_scores("ms_ssim_v", ms_ssim_v);
+    }    
+    #endif
 
     _set_prediction_result(predictionStructs, result);
 
@@ -817,6 +1097,59 @@ Result VmafQualityRunner::run(Asset asset, int (*read_frame)(float *ref_data, fl
     free_array(&psnr_array);
     free_array(&ssim_array);
     free_array(&ms_ssim_array);
+    #if 1 //LH
+    free_array(&adm_num_array_u);
+    free_array(&adm_den_array_u);
+    free_array(&adm_num_scale0_array_u);
+    free_array(&adm_den_scale0_array_u);
+    free_array(&adm_num_scale1_array_u);
+    free_array(&adm_den_scale1_array_u);
+    free_array(&adm_num_scale2_array_u);
+    free_array(&adm_den_scale2_array_u);
+    free_array(&adm_num_scale3_array_u);
+    free_array(&adm_den_scale3_array_u);
+    //free_array(&motion_array_u);
+    //free_array(&motion2_array_u);
+    free_array(&vif_num_scale0_array_u);
+    free_array(&vif_den_scale0_array_u);
+    free_array(&vif_num_scale1_array_u);
+    free_array(&vif_den_scale1_array_u);
+    free_array(&vif_num_scale2_array_u);
+    free_array(&vif_den_scale2_array_u);
+    free_array(&vif_num_scale3_array_u);
+    free_array(&vif_den_scale3_array_u);
+    free_array(&vif_array_u);
+
+    free_array(&psnr_array_u);
+    free_array(&ssim_array_u);
+    free_array(&ms_ssim_array_u);
+
+    free_array(&adm_num_array_v);
+    free_array(&adm_den_array_v);
+    free_array(&adm_num_scale0_array_v);
+    free_array(&adm_den_scale0_array_v);
+    free_array(&adm_num_scale1_array_v);
+    free_array(&adm_den_scale1_array_v);
+    free_array(&adm_num_scale2_array_v);
+    free_array(&adm_den_scale2_array_v);
+    free_array(&adm_num_scale3_array_v);
+    free_array(&adm_den_scale3_array_v);
+    //free_array(&motion_array_v);
+    //free_array(&motion2_array_v);
+    free_array(&vif_num_scale0_array_v);
+    free_array(&vif_den_scale0_array_v);
+    free_array(&vif_num_scale1_array_v);
+    free_array(&vif_den_scale1_array_v);
+    free_array(&vif_num_scale2_array_v);
+    free_array(&vif_den_scale2_array_v);
+    free_array(&vif_num_scale3_array_v);
+    free_array(&vif_den_scale3_array_v);
+    free_array(&vif_array_v);
+
+    free_array(&psnr_array_v);
+    free_array(&ssim_array_v);
+    free_array(&ms_ssim_array_v);
+    #endif
 
     return result;
 }
@@ -950,7 +1283,11 @@ void BootstrapVmafQualityRunner::_set_prediction_result(
 static const char VMAFOSS_DOC_VERSION[] = "1.3.15";
 
 double RunVmaf(const char* fmt, int width, int height,
+#if 1 //LH
+               int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data),
+#else
                int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data),
+#endif
                void *user_data, const char *model_path, const char *log_path, const char *log_fmt,
                bool disable_clip, bool enable_transform,
                bool do_psnr, bool do_ssim, bool do_ms_ssim,

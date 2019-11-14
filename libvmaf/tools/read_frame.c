@@ -253,6 +253,158 @@ fail_or_end:
     return ret;
 }
 
+#if 1 //LH
+int read_yuv_frame(float *ref_data, float *ref_data_u, float *ref_data_v, float *dis_data, float *dis_data_u, float *dis_data_v, int stride_byte, int stride_byte_uv, int w_uv, int h_uv, void *s)
+{
+    struct data *user_data = (struct data *)s;
+    char *fmt = user_data->format;
+    int w = user_data->width;
+    int h = user_data->height;
+    int ret;
+
+    // read ref y
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv444p"))
+    {
+        ret = read_image_b(user_data->ref_rfile, ref_data, 0, w, h, stride_byte);
+    }
+    else if (!strcmp(fmt, "yuv420p10le") || !strcmp(fmt, "yuv422p10le") || !strcmp(fmt, "yuv444p10le"))
+    {
+        ret = read_image_w(user_data->ref_rfile, ref_data, 0, w, h, stride_byte);
+    }
+    else
+    {
+        fprintf(stderr, "unknown format %s.\n", fmt);
+        return 1;
+    }
+    if (ret)
+    {
+        if (feof(user_data->ref_rfile))
+        {
+            ret = 2; // OK if end of file
+        }
+        return ret;
+    }
+
+    // read ref u
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv444p"))
+    {
+        ret = read_image_b(user_data->ref_rfile, ref_data_u, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else if (!strcmp(fmt, "yuv420p10le") || !strcmp(fmt, "yuv422p10le") || !strcmp(fmt, "yuv444p10le"))
+    {
+        ret = read_image_w(user_data->ref_rfile, ref_data_u, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else
+    {
+        fprintf(stderr, "unknown format %s.\n", fmt);
+        return 1;
+    }
+    if (ret)
+    {
+        if (feof(user_data->ref_rfile))
+        {
+            ret = 2; // OK if end of file
+        }
+        return ret;
+    }
+    // read ref v
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv444p"))
+    {
+        ret = read_image_b(user_data->ref_rfile, ref_data_v, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else if (!strcmp(fmt, "yuv420p10le") || !strcmp(fmt, "yuv422p10le") || !strcmp(fmt, "yuv444p10le"))
+    {
+        ret = read_image_w(user_data->ref_rfile, ref_data_v, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else
+    {
+        fprintf(stderr, "unknown format %s.\n", fmt);
+        return 1;
+    }
+    if (ret)
+    {
+        if (feof(user_data->ref_rfile))
+        {
+            ret = 2; // OK if end of file
+        }
+        return ret;
+    }
+
+    // read dis y
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv444p"))
+    {
+        ret = read_image_b(user_data->dis_rfile, dis_data, 0, w, h, stride_byte);
+    }
+    else if (!strcmp(fmt, "yuv420p10le") || !strcmp(fmt, "yuv422p10le") || !strcmp(fmt, "yuv444p10le"))
+    {
+        ret = read_image_w(user_data->dis_rfile, dis_data, 0, w, h, stride_byte);
+    }
+    else
+    {
+        fprintf(stderr, "unknown format %s.\n", fmt);
+        return 1;
+    }
+    if (ret)
+    {
+        if (feof(user_data->dis_rfile))
+        {
+            ret = 2; // OK if end of file
+        }
+        return ret;
+    }
+
+    // read dis u
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv444p"))
+    {
+        ret = read_image_b(user_data->dis_rfile, dis_data_u, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else if (!strcmp(fmt, "yuv420p10le") || !strcmp(fmt, "yuv422p10le") || !strcmp(fmt, "yuv444p10le"))
+    {
+        ret = read_image_w(user_data->dis_rfile, dis_data_u, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else
+    {
+        fprintf(stderr, "unknown format %s.\n", fmt);
+        return 1;
+    }
+    if (ret)
+    {
+        if (feof(user_data->dis_rfile))
+        {
+            ret = 2; // OK if end of file
+        }
+        return ret;
+    }
+    // read dis v
+    if (!strcmp(fmt, "yuv420p") || !strcmp(fmt, "yuv422p") || !strcmp(fmt, "yuv444p"))
+    {
+        ret = read_image_b(user_data->dis_rfile, dis_data_v, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else if (!strcmp(fmt, "yuv420p10le") || !strcmp(fmt, "yuv422p10le") || !strcmp(fmt, "yuv444p10le"))
+    {
+        ret = read_image_w(user_data->dis_rfile, dis_data_v, 0, w_uv, h_uv, stride_byte_uv);
+    }
+    else
+    {
+        fprintf(stderr, "unknown format %s.\n", fmt);
+        return 1;
+    }
+    if (ret)
+    {
+        if (feof(user_data->dis_rfile))
+        {
+            ret = 2; // OK if end of file
+        }
+        return ret;
+    }
+
+    fprintf(stderr, "Frame: %d/%d\r", completed_frames++, user_data->num_frames);
+
+fail_or_end:
+    return ret;
+}
+#endif
+
 int read_noref_frame(float *dis_data, float *temp_data, int stride_byte, void *s)
 {
     struct noref_data *user_data = (struct noref_data *)s;

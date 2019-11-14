@@ -104,8 +104,13 @@ private:
 
 class IVmafQualityRunner {
 public:
+#if 1 //LH
+    virtual Result run(Asset asset, int(*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v,
+        int stride, int stride_uv, int w_uv, int h_uv, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
+#else
     virtual Result run(Asset asset, int(*read_frame)(float *ref_data, float *main_data, float *temp_data,
         int stride, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
+#endif
         bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample) = 0;
     virtual ~IVmafQualityRunner() {}
 };
@@ -128,7 +133,11 @@ private:
 static const std::string BOOSTRAP_VMAF_MODEL_PREFIX = "vmaf_";
 
 double RunVmaf(const char* fmt, int width, int height,
+#if 1 //LH
+               int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data),
+#else
                int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data),
+#endif
                void *user_data, const char *model_path, const char *log_path, const char *log_fmt,
                bool disable_clip, bool enable_transform,
                bool do_psnr, bool do_ssim, bool do_ms_ssim,
@@ -201,9 +210,16 @@ class VmafQualityRunner : public IVmafQualityRunner
 {
 public:
     VmafQualityRunner(const char *model_path): model_path(model_path) {}
+    #if 1 //LH
+    virtual Result run(Asset asset, int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, 
+               float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv,
+               void *user_data), void *user_data, bool disable_clip, bool enable_transform,
+               bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample);
+    #else
     virtual Result run(Asset asset, int (*read_frame)(float *ref_data, float *main_data, float *temp_data,
                int stride, void *user_data), void *user_data, bool disable_clip, bool enable_transform,
                bool do_psnr, bool do_ssim, bool do_ms_ssim, int n_thread, int n_subsample);
+    #endif
     virtual ~VmafQualityRunner() {}
 protected:
     static void _transform_value(LibsvmNusvrTrainTestModel& model, double& prediction);

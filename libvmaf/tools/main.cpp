@@ -187,9 +187,15 @@ static int run_wrapper(char *fmt, int width, int height, char *ref_path, char *d
     }
 
     /* Run VMAF */
+    #if 1 //LH
+    ret = compute_vmaf(&score, fmt, width, height, read_yuv_frame, s, model_path, log_path, log_fmt,
+                       disable_clip, disable_avx, enable_transform, phone_model, do_psnr, do_ssim,
+                       do_ms_ssim, pool_method, n_thread, n_subsample, enable_conf_interval);
+    #else
     ret = compute_vmaf(&score, fmt, width, height, read_frame, s, model_path, log_path, log_fmt,
                        disable_clip, disable_avx, enable_transform, phone_model, do_psnr, do_ssim,
                        do_ms_ssim, pool_method, n_thread, n_subsample, enable_conf_interval);
+    #endif
 
 fail_or_end:
     if (s->ref_rfile)

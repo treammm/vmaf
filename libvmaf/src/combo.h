@@ -32,6 +32,90 @@ extern "C" {
 
 typedef struct
 {
+    #if 1 //LH
+    int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data);
+    void *user_data;
+    int w;
+    int h;
+    const char *fmt;
+    DArray *adm_num_array;
+    DArray *adm_den_array;
+    DArray *adm_num_scale0_array;
+    DArray *adm_den_scale0_array;
+    DArray *adm_num_scale1_array;
+    DArray *adm_den_scale1_array;
+    DArray *adm_num_scale2_array;
+    DArray *adm_den_scale2_array;
+    DArray *adm_num_scale3_array;
+    DArray *adm_den_scale3_array;
+    DArray *motion_array;
+    DArray *motion2_array;
+    DArray *vif_num_scale0_array;
+    DArray *vif_den_scale0_array;
+    DArray *vif_num_scale1_array;
+    DArray *vif_den_scale1_array;
+    DArray *vif_num_scale2_array;
+    DArray *vif_den_scale2_array;
+    DArray *vif_num_scale3_array;
+    DArray *vif_den_scale3_array;
+    DArray *vif_array;
+    DArray *psnr_array;
+    DArray *ssim_array;
+    DArray *ms_ssim_array;
+
+    DArray *adm_num_array_u;
+    DArray *adm_den_array_u;
+    DArray *adm_num_scale0_array_u;
+    DArray *adm_den_scale0_array_u;
+    DArray *adm_num_scale1_array_u;
+    DArray *adm_den_scale1_array_u;
+    DArray *adm_num_scale2_array_u;
+    DArray *adm_den_scale2_array_u;
+    DArray *adm_num_scale3_array_u;
+    DArray *adm_den_scale3_array_u;
+    //DArray *motion_array_u;
+    //DArray *motion2_array_u;
+    DArray *vif_num_scale0_array_u;
+    DArray *vif_den_scale0_array_u;
+    DArray *vif_num_scale1_array_u;
+    DArray *vif_den_scale1_array_u;
+    DArray *vif_num_scale2_array_u;
+    DArray *vif_den_scale2_array_u;
+    DArray *vif_num_scale3_array_u;
+    DArray *vif_den_scale3_array_u;
+    DArray *vif_array_u;
+    DArray *psnr_array_u;
+    DArray *ssim_array_u;
+    DArray *ms_ssim_array_u;
+
+    DArray *adm_num_array_v;
+    DArray *adm_den_array_v;
+    DArray *adm_num_scale0_array_v;
+    DArray *adm_den_scale0_array_v;
+    DArray *adm_num_scale1_array_v;
+    DArray *adm_den_scale1_array_v;
+    DArray *adm_num_scale2_array_v;
+    DArray *adm_den_scale2_array_v;
+    DArray *adm_num_scale3_array_v;
+    DArray *adm_den_scale3_array_v;
+    //DArray *motion_array_v;
+    //DArray *motion2_array_v;
+    DArray *vif_num_scale0_array_v;
+    DArray *vif_den_scale0_array_v;
+    DArray *vif_num_scale1_array_v;
+    DArray *vif_den_scale1_array_v;
+    DArray *vif_num_scale2_array_v;
+    DArray *vif_den_scale2_array_v;
+    DArray *vif_num_scale3_array_v;
+    DArray *vif_den_scale3_array_v;
+    DArray *vif_array_v;
+    DArray *psnr_array_v;
+    DArray *ssim_array_v;
+    DArray *ms_ssim_array_v;
+
+    char *errmsg;
+    int n_subsample;
+    #else
     int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data);
     void *user_data;
     int w;
@@ -63,6 +147,7 @@ typedef struct
     DArray *ms_ssim_array;
     char *errmsg;
     int n_subsample;
+    #endif
 
     int frm_idx;
     int stride;
@@ -75,6 +160,14 @@ typedef struct
     BLUR_BUF_ARRAY blur_buf_array;
     BLUR_BUF_ARRAY ref_buf_array;
     BLUR_BUF_ARRAY dis_buf_array;
+    #if 1 //LH
+    BLUR_BUF_ARRAY blur_buf_array_u;
+    BLUR_BUF_ARRAY ref_buf_array_u;
+    BLUR_BUF_ARRAY dis_buf_array_u;
+    BLUR_BUF_ARRAY blur_buf_array_v;
+    BLUR_BUF_ARRAY ref_buf_array_v;
+    BLUR_BUF_ARRAY dis_buf_array_v;
+    #endif
     DArray *motion_score_compute_flag_array;
     int ret;
 
@@ -82,6 +175,87 @@ typedef struct
 
 void* combo_threadfunc(void* vmaf_thread_data);
 
+#if 1 //LH
+int combo(int (*read_frame)(float *ref_data, float *ref_data_u, float *ref_data_v, float *main_data, float *main_data_u, float *main_data_v, int stride, int stride_uv, int w_uv, int h_uv, void *user_data), void *user_data, int w, int h, const char *fmt,
+        DArray *adm_num_array,
+        DArray *adm_den_array,
+        DArray *adm_num_scale0_array,
+        DArray *adm_den_scale0_array,
+        DArray *adm_num_scale1_array,
+        DArray *adm_den_scale1_array,
+        DArray *adm_num_scale2_array,
+        DArray *adm_den_scale2_array,
+        DArray *adm_num_scale3_array,
+        DArray *adm_den_scale3_array,
+        DArray *motion_array,
+        DArray *motion2_array,
+        DArray *vif_num_scale0_array,
+        DArray *vif_den_scale0_array,
+        DArray *vif_num_scale1_array,
+        DArray *vif_den_scale1_array,
+        DArray *vif_num_scale2_array,
+        DArray *vif_den_scale2_array,
+        DArray *vif_num_scale3_array,
+        DArray *vif_den_scale3_array,
+        DArray *vif_array,
+        DArray *psnr_array,
+        DArray *ssim_array,
+        DArray *ms_ssim_array,
+
+        DArray *adm_num_array_u,
+        DArray *adm_den_array_u,
+        DArray *adm_num_scale0_array_u,
+        DArray *adm_den_scale0_array_u,
+        DArray *adm_num_scale1_array_u,
+        DArray *adm_den_scale1_array_u,
+        DArray *adm_num_scale2_array_u,
+        DArray *adm_den_scale2_array_u,
+        DArray *adm_num_scale3_array_u,
+        DArray *adm_den_scale3_array_u,
+        //DArray *motion_array_u,
+        //DArray *motion2_array_u,
+        DArray *vif_num_scale0_array_u,
+        DArray *vif_den_scale0_array_u,
+        DArray *vif_num_scale1_array_u,
+        DArray *vif_den_scale1_array_u,
+        DArray *vif_num_scale2_array_u,
+        DArray *vif_den_scale2_array_u,
+        DArray *vif_num_scale3_array_u,
+        DArray *vif_den_scale3_array_u,
+        DArray *vif_array_u,
+        DArray *psnr_array_u,
+        DArray *ssim_array_u,
+        DArray *ms_ssim_array_u,
+
+        DArray *adm_num_array_v,
+        DArray *adm_den_array_v,
+        DArray *adm_num_scale0_array_v,
+        DArray *adm_den_scale0_array_v,
+        DArray *adm_num_scale1_array_v,
+        DArray *adm_den_scale1_array_v,
+        DArray *adm_num_scale2_array_v,
+        DArray *adm_den_scale2_array_v,
+        DArray *adm_num_scale3_array_v,
+        DArray *adm_den_scale3_array_v,
+        //DArray *motion_array_v,
+        //DArray *motion2_array_v,
+        DArray *vif_num_scale0_array_v,
+        DArray *vif_den_scale0_array_v,
+        DArray *vif_num_scale1_array_v,
+        DArray *vif_den_scale1_array_v,
+        DArray *vif_num_scale2_array_v,
+        DArray *vif_den_scale2_array_v,
+        DArray *vif_num_scale3_array_v,
+        DArray *vif_den_scale3_array_v,
+        DArray *vif_array_v,
+        DArray *psnr_array_v,
+        DArray *ssim_array_v,
+        DArray *ms_ssim_array_v,
+
+        char *errmsg,
+        int n_thread,
+        int n_subsample
+#else
 int combo(int (*read_frame)(float *ref_data, float *main_data, float *temp_data, int stride, void *user_data), void *user_data, int w, int h, const char *fmt,
         DArray *adm_num_array,
         DArray *adm_den_array,
@@ -110,6 +284,7 @@ int combo(int (*read_frame)(float *ref_data, float *main_data, float *temp_data,
         char *errmsg,
         int n_thread,
         int n_subsample
+#endif
 );
 
 #ifdef __cplusplus

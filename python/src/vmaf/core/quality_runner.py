@@ -731,6 +731,17 @@ class VmafossExecQualityRunner(QualityRunner):
         return quality_result
 
 
+class VmafossColorExecQualityRunner(VmafossExecQualityRunner):
+    FEATURES = ['adm2_u', 'adm_scale0_u', 'adm_scale1_u', 'adm_scale2_u', 'adm_scale3_u',
+                'vif_scale0_u', 'vif_scale1_u', 'vif_scale2_u', 'vif_scale3_u',
+                'vif_u', 'psnr_u', 'ssim_u',
+                'adm2_v', 'adm_scale0_v', 'adm_scale1_v', 'adm_scale2_v', 'adm_scale3_v',
+                'vif_scale0_v', 'vif_scale1_v', 'vif_scale2_v', 'vif_scale3_v',
+                'vif_v', 'psnr_v', 'ssim_v'
+               ]
+
+
+
 class SsimQualityRunner(QualityRunner):
 
     TYPE = 'SSIM'
