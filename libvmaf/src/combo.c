@@ -608,25 +608,25 @@ void* combo_threadfunc(void* vmaf_thread_data)
             dbg_printf("ssim_v: %.3f, ", score);
             insert_array_at(thread_data->ssim_array_v, score, frm_idx);
         }
-        // if (frm_idx % n_subsample == 0 && thread_data->ms_ssim_array_u != NULL && thread_data->ms_ssim_array_v != NULL)
-        // {
-        //     /* =========== ms-ssim ============== */
-        //     if ((ret = compute_ms_ssim(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, l_scores, c_scores, s_scores)))
-        //     {
-        //         sprintf(errmsg, "compute_ms_ssim u failed.\n");
-        //         goto fail_or_end;
-        //     }
-        //     dbg_printf("ms_ssim_u: %.3f, ", score);
-        //     insert_array_at(thread_data->ms_ssim_array_u, score, frm_idx);
+        if (frm_idx % n_subsample == 0 && thread_data->ms_ssim_array_u != NULL && thread_data->ms_ssim_array_v != NULL && w_uv >= 192 && h_uv >= 192)
+        {
+            /* =========== ms-ssim ============== */
+            if ((ret = compute_ms_ssim(ref_buf_u, dis_buf_u, w_uv, h_uv, stride_uv, stride_uv, &score, l_scores, c_scores, s_scores)))
+            {
+                sprintf(errmsg, "compute_ms_ssim u failed.\n");
+                goto fail_or_end;
+            }
+            dbg_printf("ms_ssim_u: %.3f, ", score);
+            insert_array_at(thread_data->ms_ssim_array_u, score, frm_idx);
 
-        //     if ((ret = compute_ms_ssim(ref_buf_v, dis_buf_v, w_uv, h_uv, stride_uv, stride_uv, &score, l_scores, c_scores, s_scores)))
-        //     {
-        //         sprintf(errmsg, "compute_ms_ssim v failed.\n");
-        //         goto fail_or_end;
-        //     }
-        //     dbg_printf("ms_ssim_v: %.3f, ", score);
-        //     insert_array_at(thread_data->ms_ssim_array_v, score, frm_idx);
-        // }
+            if ((ret = compute_ms_ssim(ref_buf_v, dis_buf_v, w_uv, h_uv, stride_uv, stride_uv, &score, l_scores, c_scores, s_scores)))
+            {
+                sprintf(errmsg, "compute_ms_ssim v failed.\n");
+                goto fail_or_end;
+            }
+            dbg_printf("ms_ssim_v: %.3f, ", score);
+            insert_array_at(thread_data->ms_ssim_array_v, score, frm_idx);
+        }
 
         if(offset_flag)
         {
